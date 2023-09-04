@@ -13,6 +13,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use('/public', express.static(__dirname + '/src/public'));
+// Ruta publica seria ejemplo: http://localhost:3030/public/images/musica.jpg
 
 //Conectando a Base de Datos
 connection();
