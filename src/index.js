@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import __dirname from "../aux_dirname.js";
 import config from "./config/config.js";
+import connection from "./database/connection.js";
 
 const PORT = config.app.PORT || 8080;
 
@@ -13,6 +14,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+//Conectando a Base de Datos
+connection();
 
 //routes
 app.get('/',(req,res) => {
