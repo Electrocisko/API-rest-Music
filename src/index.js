@@ -33,9 +33,9 @@ app.get("/", (req, res) => {
 
 //routes
 app.use("/api/user", userRouter);
-app.use("/api/song", songRouter);
 app.use("/api/artist", artistRouter);
 app.use("/api/album", albumRouter);
+app.use("/api/song", songRouter);
 
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
