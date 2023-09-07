@@ -1,4 +1,8 @@
 import { User } from "../models/userModel.js";
+import { createHash, isValidPassword } from "../helpers/cryptPaswword.js";
+import validate from "../helpers/validations.js";
+
+// let checkpas = await isValidPassword(passwordHashed,"123" );
 
 // Acciones de prueb
 const pruebaUser = (req, res) => {
@@ -11,15 +15,18 @@ const pruebaUser = (req, res) => {
 
 const registerUser = async (req, res) => {
   try {
-    //Comprobar que llegan todos los datos requeridos-  controlar usuario duplicado - cifrar contraseña . crear objeto user y luego grabarlo y hacer un select
+    //Comprobar que llegan todos los datos requeridos
     const data = req.body;
     if (!data.name) throw new Error("Falta Apellido");
     if (!data.surname) throw new Error("Falta Apellido");
     if (!data.nick) throw new Error("Falta Nick");
     if (!data.email) throw new Error("Falta Email");
-    if (!data.password) throw new Error("Falta Password");
-
+    if (!data.password || !data.passwordCheck)
+      throw new Error("Falta Password");
+    if (data.password != data.passwordCheck)
+      throw new Error("Los passwords no coindicen");
     // Validar (Queda pendiente con Validator)
+    validate(data);
 
     // Controlar que no haya otro usuario registrado con ese mail o con ese nick.
     let exist = await User.find({ nick: data.nick });
@@ -31,19 +38,16 @@ const registerUser = async (req, res) => {
 
     //Crear el Objeto User
     const newUser = new User(data);
-
-    await newUser.save();
-
     // Agregar el password hasheado
+    newUser.password = await createHash(data.password);
 
     //Grabar usuario en la base de datos
-
+    await newUser.save();
     //Devolver los datos con un select
 
     return res.status(200).json({
       status: "success",
       message: "Usuario Registrado",
-      data,
       newUser,
     });
   } catch (error) {
