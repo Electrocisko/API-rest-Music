@@ -5,6 +5,7 @@ const router = Router();
 //Defino las rutas
 router.get('/prueba',userControler.pruebaUser );
 router.post('/register',userControler.registerUser);
+router.post('/login',userControler.loginUser);
 
 
 

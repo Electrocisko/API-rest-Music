@@ -2,6 +2,7 @@ import { User } from "../models/userModel.js";
 import { createHash, isValidPassword } from "../helpers/cryptPaswword.js";
 import validate from "../helpers/validations.js";
 import UserDtoPresenter from "../helpers/userDTO.js";
+import jwt from "../services/jwt.js";
 
 // let checkpas = await isValidPassword(passwordHashed,"123" );
 
@@ -58,7 +59,34 @@ const registerUser = async (req, res) => {
   }
 };
 
+const loginUser = async (req,res) => {
+  try {
+    const data = req.body;
+    if (!data.email) throw new Error("Falta ingresar Email");
+    if (!data.password) throw new Error("Falta ingresar Password");
+    let user = await  User.findOne({email: data.email});
+    if (!user) throw new Error("No se ha encontrado el usuario");
+    let checkpas = await isValidPassword(user.password,data.password );
+    if (!checkpas) throw new Error("Password incorrecto");
+    let token = jwt.createToken(data);
+    let userDto = UserDtoPresenter(user);
+
+    return res.status(200).json({
+      status:"success",
+      message: "Aca se logea usuario",
+      user: userDto,
+      token
+    })
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+}
+
 export default {
   pruebaUser,
   registerUser,
+  loginUser
 };
