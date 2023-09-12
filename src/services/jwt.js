@@ -20,8 +20,11 @@ const createToken = (user) => {
 }
 
 const decodeToken = (token) => {
-    const data = jwt.decode(token, SECRET) ;
-    return data;
+     //Limpio el token de carcateres inecesarios
+     token = token.replace(/['"]+/g, "");
+    const payload = jwt.decode(token, SECRET) ;
+    if(payload.exp  <= moment().unix()) return null;
+    return payload;
 }
 
 

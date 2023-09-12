@@ -3,7 +3,7 @@ import { createHash, isValidPassword } from "../helpers/cryptPaswword.js";
 import validate from "../helpers/validations.js";
 import UserDtoPresenter from "../helpers/userDTO.js";
 import jwt from "../services/jwt.js";
-
+import mongoose from "mongoose";
 // let checkpas = await isValidPassword(passwordHashed,"123" );
 
 // Acciones de prueb
@@ -37,7 +37,7 @@ const registerUser = async (req, res) => {
     exist = await User.find({ email: data.email.toLowerCase() });
     if (exist.length != 0)
       throw new Error("Usuario ya registrado con ese email");
- // Agregar el password hasheado
+    // Agregar el password hasheado
     data.password = await createHash(data.password);
     //Crear el Objeto User
     const newUser = new User(data);
@@ -45,11 +45,11 @@ const registerUser = async (req, res) => {
     let response = await newUser.save();
     //Elimino los datos sensibles DTO
     let userDto = UserDtoPresenter(response);
-    
+
     return res.status(200).json({
       status: "success",
       message: "Usuario Registrado",
-      user: userDto
+      user: userDto,
     });
   } catch (error) {
     return res.status(400).json({
@@ -59,34 +59,88 @@ const registerUser = async (req, res) => {
   }
 };
 
-const loginUser = async (req,res) => {
+const loginUser = async (req, res) => {
   try {
     const data = req.body;
     if (!data.email) throw new Error("Falta ingresar Email");
     if (!data.password) throw new Error("Falta ingresar Password");
-    let user = await  User.findOne({email: data.email});
+    let user = await User.findOne({ email: data.email });
     if (!user) throw new Error("No se ha encontrado el usuario");
-    let checkpas = await isValidPassword(user.password,data.password );
+    let checkpas = await isValidPassword(user.password, data.password);
     if (!checkpas) throw new Error("Password incorrecto");
     let token = jwt.createToken(data);
     let userDto = UserDtoPresenter(user);
 
     return res.status(200).json({
-      status:"success",
+      status: "success",
       message: "Aca se logea usuario",
       user: userDto,
-      token
-    })
+      token,
+    });
   } catch (error) {
     return res.status(400).json({
       status: "error",
       message: error.message,
     });
   }
-}
+};
+
+const profileUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(userId))
+      throw new Error("Id de usuario no valido");
+    let profile = await User.findById(userId);
+    if (!profile) throw new Error("No se ha encontrado perfil de usuario");
+    profile = UserDtoPresenter(profile);
+    return res.status(200).json({
+      status: "sucess",
+      message: "Profile user",
+      profile,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+const updateUser = async (req, res) => {
+  try {
+   //Recoger datos usuario identificado
+
+   //Recoger datos a actualizar
+
+   //Comprobar si el usuario existe
+
+   //Comprobar si el usuario existe y no soy yo(el identificado)
+
+   //Si ya existe devuelvo una repuesta
+
+   //Cifrar passwors si es que llega
+
+   // Buscar usuario en bd  y actualizar
+
+   //Devolver repuesta
+
+   
+    return res.status(200).json({
+      status: "sucess",
+      message: "Updated user",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
 
 export default {
   pruebaUser,
   registerUser,
-  loginUser
+  loginUser,
+  profileUser,
+  updateUser,
 };
