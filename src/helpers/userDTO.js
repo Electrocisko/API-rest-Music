@@ -1,6 +1,7 @@
 const  UserDtoPresenter  = (user) => {
 
     const userDto = {
+        _id: user._id,
         name: user.name,
         surname: user.surname,
         nick: user.nick,

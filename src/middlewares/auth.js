@@ -8,7 +8,9 @@ const auth = (req, res, next) => {
     if (!req.headers.authorization)
       throw new Error("Peticion no tiene cabecera de autenticación");
     let payload= jwt.decodeToken(req.headers.authorization);
-    if (!payload) throw new Error("Token invalido o vencido")
+    if (!payload) throw new Error("Token invalido o vencido");
+    // Aca le paso los datos del usuario por req
+    req.user = payload;
     next();
   } catch (error) {
     return res.status(400).json({
@@ -17,17 +19,5 @@ const auth = (req, res, next) => {
     });
   }
 };
-
-//Comprobar si me llega la cabecera auth
-
-// Limpiar Token
-
-// Decodificar token
-
-// Comprobar la expiracion del token
-
-//Agregar datos al request
-
-//Pasar a la ejecucion  de la accion
 
 export default auth;

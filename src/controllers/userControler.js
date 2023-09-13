@@ -68,8 +68,8 @@ const loginUser = async (req, res) => {
     if (!user) throw new Error("No se ha encontrado el usuario");
     let checkpas = await isValidPassword(user.password, data.password);
     if (!checkpas) throw new Error("Password incorrecto");
-    let token = jwt.createToken(data);
     let userDto = UserDtoPresenter(user);
+    let token = jwt.createToken(userDto);
 
     return res.status(200).json({
       status: "success",
@@ -108,26 +108,27 @@ const profileUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-   //Recoger datos usuario identificado
+    //Recoger datos usuario identificado
+    let userIdentity = req.user;
 
-   //Recoger datos a actualizar
+    //Recoger datos a actualizar
 
-   //Comprobar si el usuario existe
+    //Comprobar si el usuario existe
 
-   //Comprobar si el usuario existe y no soy yo(el identificado)
+    //Comprobar si el usuario existe y no soy yo(el identificado)
 
-   //Si ya existe devuelvo una repuesta
+    //Si ya existe devuelvo una repuesta
 
-   //Cifrar passwors si es que llega
+    //Cifrar passwors si es que llega
 
-   // Buscar usuario en bd  y actualizar
+    // Buscar usuario en bd  y actualizar
 
-   //Devolver repuesta
+    //Devolver repuesta
 
-   
     return res.status(200).json({
       status: "sucess",
       message: "Updated user",
+      dataProof: userIdentity,
     });
   } catch (error) {
     return res.status(400).json({

@@ -6,7 +6,7 @@ const SECRET = config.jwt.SECRET;
 
 const createToken = (user) => {
     const payload = {
-        id: user._id,
+        _id: user._id,
         name: user.name,
         surname: user.surname,
         nick: user.nick,
@@ -26,7 +26,6 @@ const decodeToken = (token) => {
     if(payload.exp  <= moment().unix()) return null;
     return payload;
 }
-
 
 export  default  {
     createToken,
