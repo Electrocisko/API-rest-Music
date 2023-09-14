@@ -110,12 +110,24 @@ const updateUser = async (req, res) => {
   try {
     //Recoger datos usuario identificado
     let userIdentity = req.user;
-
     //Recoger datos a actualizar
-
+    let userToUpdated = req.body
     //Comprobar si el usuario existe
-
+    let existUser = await User.findOne({
+      $or:[
+        {email: userToUpdated.email},
+        {nick: userToUpdated.nick}
+      ]
+    })
+    if(!existUser) throw new Error("No se ha encontrado el usuario")
     //Comprobar si el usuario existe y no soy yo(el identificado)
+
+   if (userIdentity._id != existUser._id) throw new Error("No tiene las credenciales para modificar otro usuario")
+ 
+
+
+
+    
 
     //Si ya existe devuelvo una repuesta
 
@@ -128,7 +140,10 @@ const updateUser = async (req, res) => {
     return res.status(200).json({
       status: "sucess",
       message: "Updated user",
-      dataProof: userIdentity,
+      userIdentity,
+      userToUpdated,
+    
+      
     });
   } catch (error) {
     return res.status(400).json({
