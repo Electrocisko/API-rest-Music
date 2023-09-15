@@ -111,28 +111,22 @@ const updateUser = async (req, res) => {
     //Recoger datos usuario identificado
     let userIdentity = req.user;
     //Recoger datos a actualizar
-    let userToUpdated = req.body
+    let userToUpdated = req.body;
     //Comprobar si el usuario existe
     let existUser = await User.findOne({
-      $or:[
-        {email: userToUpdated.email},
-        {nick: userToUpdated.nick}
-      ]
-    })
-    if(!existUser) throw new Error("No se ha encontrado el usuario")
+      $or: [{ email: userToUpdated.email }, { nick: userToUpdated.nick }],
+    });
+    if (!existUser) throw new Error("No se ha encontrado el usuario");
     //Comprobar si el usuario existe y no soy yo(el identificado)
+    if (userIdentity._id != existUser._id)
+      throw new Error("No tiene las credenciales para modificar otro usuario");
 
-   if (userIdentity._id != existUser._id) throw new Error("No tiene las credenciales para modificar otro usuario")
- 
+    // FALTA VALIDATOR NO?
 
-
-
-    
-
-    //Si ya existe devuelvo una repuesta
-
-    //Cifrar passwors si es que llega
-
+    //Cifrar password si es que llega
+    if (userToUpdated.password) {
+      userToUpdated.password = await createHash(userToUpdated.password);
+    }
     // Buscar usuario en bd  y actualizar
 
     //Devolver repuesta
@@ -142,8 +136,6 @@ const updateUser = async (req, res) => {
       message: "Updated user",
       userIdentity,
       userToUpdated,
-    
-      
     });
   } catch (error) {
     return res.status(400).json({
