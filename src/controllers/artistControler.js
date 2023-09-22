@@ -1,5 +1,6 @@
 import { Artist } from "../models/artistModel.js";
 import fs from "fs";
+import mongoose from "mongoose";
 
 const pruebaArtist = (req, res) => {
   return res.status(200).send({
@@ -10,10 +11,11 @@ const pruebaArtist = (req, res) => {
 const createArtist = (req, res) => {
   try {
     let artistData = req.body;
+    if (!artistData.name) throw new Error("Falta nombre de artista");
+    if (!artistData.description) throw new Error("Falta Descripción");
     let newArtist = new Artist(artistData);
     // Por omision le asigno una imagen generica
-    newArtist.image = "/public/images/musica.jpg";
-
+    newArtist.image = "musica.jpg";
     // Si llega el req.file hago las validaciones y actualizo el path de la imagen en newartist
     if (req.file != undefined) {
       let image = req.file.originalname;
@@ -31,7 +33,8 @@ const createArtist = (req, res) => {
         fs.unlinkSync(filePath); // borro el archivo incorrecto
         throw new Error("Extension no valida");
       }
-      newArtist.image = req.file.path;
+      // Agrego el nombre del archivo en el artista
+      newArtist.image = req.file.filename;
     }
     newArtist.save();
 
@@ -41,14 +44,37 @@ const createArtist = (req, res) => {
       newArtist,
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(400).json({
       status: "error",
       message: error.message,
     });
   }
 };
 
+const oneArtist = async (req,res) =>{
+  try {
+    const id = req.params.id
+    if (!mongoose.Types.ObjectId.isValid(id))
+      throw new Error("Id de artista no valido");
+    let artist = await Artist.findById(id);
+    if (!artist) throw new Error("No se ha encontrado perfil de artista");
+    return res.status(200).json({
+      status: "success",
+      message: "Datos del artista",
+      artist
+      
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+
+}
+
 export default {
   pruebaArtist,
   createArtist,
+  oneArtist
 };
