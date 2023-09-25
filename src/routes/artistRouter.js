@@ -8,5 +8,7 @@ const router = Router();
 router.get('/prueba',artistControler.pruebaArtist );
 router.post('/create', upLoader.single("image") ,artistControler.createArtist);
 router.get('/one/:id', auth, artistControler.oneArtist);
+router.get('/all/:page?',auth, artistControler.allArtist);
+router.put('/edit/:id', auth, artistControler.editArtist);
 
 export default router;  

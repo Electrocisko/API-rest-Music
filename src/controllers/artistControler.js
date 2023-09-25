@@ -2,6 +2,7 @@ import { Artist } from "../models/artistModel.js";
 import fs from "fs";
 import mongoose from "mongoose";
 
+
 const pruebaArtist = (req, res) => {
   return res.status(200).send({
     message: "Mensaje enviado desde controlador Artist",
@@ -51,9 +52,9 @@ const createArtist = (req, res) => {
   }
 };
 
-const oneArtist = async (req,res) =>{
+const oneArtist = async (req, res) => {
   try {
-    const id = req.params.id
+    const id = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(id))
       throw new Error("Id de artista no valido");
     let artist = await Artist.findById(id);
@@ -61,8 +62,45 @@ const oneArtist = async (req,res) =>{
     return res.status(200).json({
       status: "success",
       message: "Datos del artista",
-      artist
-      
+      artist,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+const allArtist = async (req, res) => {
+  try {
+    //options de paginate
+    let page = req.params.page ?? 1;
+    const options = {
+      page: page,
+      limit: 5,
+      sort: { name: 1 },
+    }
+    const list = await Artist.paginate({},options)
+
+    return res.status(200).json({
+      status: "success",
+      message: "Listado de artistas",
+      artists: list
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+const editArtist = async (req,res) => {
+  try {
+    return res.status(200).json({
+      status: "success",
+      message: "Editar Artista"
     });
   } catch (error) {
     return res.status(400).json({
@@ -76,5 +114,7 @@ const oneArtist = async (req,res) =>{
 export default {
   pruebaArtist,
   createArtist,
-  oneArtist
+  oneArtist,
+  allArtist,
+  editArtist
 };

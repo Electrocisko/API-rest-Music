@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 const { Schema, model } = mongoose;
+import mongoosePaginate from 'mongoose-paginate-v2';
+
+
 
 const artistSchema = new Schema({
   name: {
@@ -19,5 +22,7 @@ const artistSchema = new Schema({
     default: Date.now,
   },
 });
+
+artistSchema.plugin(mongoosePaginate);
 
 export const Artist = model("artists",artistSchema);
