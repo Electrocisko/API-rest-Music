@@ -83,9 +83,34 @@ const albumsArtist = async (req, res) => {
   }
 };
 
+const updatedAlbum = async (req, res) => {
+  try {
+    let id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id))
+      throw new Error("Id del album no valido");
+    let newDataAlbum = req.body
+    //Faltaria validaciones
+    if(req.file) newDataAlbum.image = req.file.filename;
+    let albumUpdated = await Album.findByIdAndUpdate(id,newDataAlbum,{new: true});
+   if(!albumUpdated) throw new Error("No existe album con ese id")
+    return res.status(200).json({
+      status: "success",
+      message: "Modificar album",
+      albumUpdated
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+
 export default {
   pruebaAlbum,
   createAlbum,
   oneAlbum,
   albumsArtist,
+  updatedAlbum
 };
