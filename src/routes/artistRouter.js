@@ -1,6 +1,6 @@
 import {Router} from "express";
 import artistControler from "../controllers/artistControler.js";
-import upLoader from "../middlewares/multerArtist.js";
+import upLoader from "../helpers/storageImageArtist.js";
 import auth from "../middlewares/auth.js";
 
 const router = Router();

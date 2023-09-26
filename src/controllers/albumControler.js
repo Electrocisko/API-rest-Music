@@ -1,19 +1,6 @@
 import { Album } from "../models/albumModel.js";
 import { Artist } from "../models/artistModel.js";
 import mongoose from "mongoose";
-import multer from "multer";
-
-//Multer
-let storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./src/public/images/albums");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
-export const uploader = multer({ storage });
 
 const pruebaAlbum = (req, res) => {
   return res.status(200).send({

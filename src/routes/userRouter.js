@@ -1,7 +1,7 @@
 import {Router} from "express";
 import userControler from "../controllers/userControler.js";
 import auth from "../middlewares/auth.js";
-import upload from "../middlewares/multer.js"; //Multer
+import upLoader from "../helpers/storageImageAvatar.js"; //Multer
 
 const router = Router();
 
@@ -11,7 +11,7 @@ router.post('/register',userControler.registerUser);
 router.post('/login',userControler.loginUser);
 router.get('/profile/:id',auth, userControler.profileUser);
 router.put('/updated',auth, userControler.updateUser);
-router.post('/upload', [auth, upload.single("avatar")], userControler.loader);
+router.post('/upload', [auth, upLoader.single("avatar")], userControler.loader);
 router.get('/avatar/:file',userControler.avatar);
 
 
