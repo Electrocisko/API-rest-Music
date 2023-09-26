@@ -25,4 +25,4 @@ const artistSchema = new Schema({
 
 artistSchema.plugin(mongoosePaginate);
 
-export const Artist = model("artists",artistSchema);
+export const Artist = model("artist",artistSchema);

@@ -98,9 +98,18 @@ const allArtist = async (req, res) => {
 
 const editArtist = async (req,res) => {
   try {
+    let newData = req.body;
+    let newImage = req.file;
+    if (newImage) newData.image = newImage.filename;
+    let id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) throw new Error("Id de artista no valido");
+    let modifiedArtist = await Artist.findByIdAndUpdate(id,newData, {new: true})
+    if (!modifiedArtist) throw new Error("No se encontró artista con ese id")
+
     return res.status(200).json({
       status: "success",
-      message: "Editar Artista"
+      message: "Editar Artista",
+      modifiedArtist
     });
   } catch (error) {
     return res.status(400).json({
@@ -111,10 +120,31 @@ const editArtist = async (req,res) => {
 
 }
 
+const deleteArtist = async (req,res) => {
+  try {
+    let id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) throw new Error("Id de artista no valido");
+    let artistDeleted = await Artist.findByIdAndDelete(id);
+    if(!artistDeleted) throw new Error("Artista no se ha podido borrar o inexistente")
+
+    return res.status(200).json({
+      status: "success",
+      message: "Borrar Artista",
+      artistDeleted
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+}
+
 export default {
   pruebaArtist,
   createArtist,
   oneArtist,
   allArtist,
-  editArtist
+  editArtist,
+  deleteArtist
 };
