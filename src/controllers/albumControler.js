@@ -22,14 +22,14 @@ const createAlbum = async (req, res) => {
     let artist = await Artist.findById(album.artist);
     if (!artist)
       throw new Error("No se encontro el artista en la base de datos");
-    // Me falta hacer lo de Multer para los archivos de imagen del album.
-
+    // multer
+    req.file != null && (album.image = req.file.filename);
     let newAlbum = new Album(album);
-    let aux = await newAlbum.save();
+    let data = await newAlbum.save();
     return res.status(200).json({
       status: "success",
       message: "Ingresar Album a Base de datos",
-      album: aux,
+      album: data,
     });
   } catch (error) {
     return res.status(400).json({
@@ -42,8 +42,11 @@ const createAlbum = async (req, res) => {
 const oneAlbum = async (req, res) => {
   try {
     // Falta todas las validaciones
+    let id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id))
+      throw new Error("Id del album no valido");
     let album = await Album.findById(req.params.id).populate("artist");
-
+    if (!album) throw new Error("No se ha encontrado album con ese id");
     return res.status(200).json({
       status: "success",
       message: "Obtener Album por Id",
@@ -57,8 +60,32 @@ const oneAlbum = async (req, res) => {
   }
 };
 
+const albumsArtist = async (req, res) => {
+  try {
+    let artistId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(artistId))
+      throw new Error("Id del artista no valido");
+    let list = await Album.find({ artist: artistId });
+    if (list.length == 0)
+      throw new Error(
+        "El artista no tiene albumes registrados o  no existe"
+      );
+    return res.status(200).json({
+      status: "success",
+      message: "Obtener Lista de albums por artista",
+      list,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
 export default {
   pruebaAlbum,
   createAlbum,
   oneAlbum,
+  albumsArtist,
 };
