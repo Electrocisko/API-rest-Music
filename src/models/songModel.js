@@ -31,4 +31,4 @@ const SongSchema = new Schema({
 
 SongSchema.plugin(mongoosePaginate);
 
-export const song = model("songs", SongSchema);
+export const Song = model("songs", SongSchema);
