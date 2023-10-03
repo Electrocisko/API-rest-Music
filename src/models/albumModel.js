@@ -28,4 +28,4 @@ const albumSchema = new Schema({
 
 albumSchema.plugin(mongoosePaginate);
 
-export const Album = model("albums", albumSchema);
+export const Album = model("album", albumSchema);

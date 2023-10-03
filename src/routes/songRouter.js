@@ -1,6 +1,7 @@
 import {Router} from "express";
 import songControler from "../controllers/songControler.js";
 import upLoader from "../helpers/storageSong.js";
+import auth from "../middlewares/auth.js";
 
 const router = Router();
 
@@ -8,7 +9,8 @@ const router = Router();
 
 router.get('/prueba',songControler.pruebaSong );
 router.post('/create', upLoader.single("file"), songControler.createSong);
-router.get('/one', songControler.oneSong);
+router.get('/one/:id',auth ,songControler.oneSong);
+router.get('/songsalbum/:id', auth,songControler.songsFromAlbum);
 
 
 export default router;

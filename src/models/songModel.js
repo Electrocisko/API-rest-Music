@@ -5,7 +5,7 @@ import mongoosePaginate from "mongoose-paginate-v2";
 const SongSchema = new Schema({
   album: {
     type: Schema.ObjectId,
-    ref: "Album",
+    ref: "album",
   },
   track: {
     type: String,
@@ -31,4 +31,4 @@ const SongSchema = new Schema({
 
 SongSchema.plugin(mongoosePaginate);
 
-export const Song = model("songs", SongSchema);
+export const Song = model("song", SongSchema);
