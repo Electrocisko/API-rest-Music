@@ -1,6 +1,8 @@
 // Acciones de prueba
 import mongoose from "mongoose";
 import { Song } from "../models/songModel.js";
+import fs from "fs";
+import path from "path";
 
 const pruebaSong = (req, res) => {
   return res.status(200).send({
@@ -64,33 +66,56 @@ const oneSong = async (req, res) => {
   }
 };
 
-const songsFromAlbum = async (req,res) => {
+const songsFromAlbum = async (req, res) => {
   try {
     let albumId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(albumId))
       throw new Error("Id no valido");
 
-      let list = await Song.find({album: albumId }).populate({
-        path: "album",
-        populate: { path: "artist" },
-      });
+    let list = await Song.find({ album: albumId }).populate({
+      path: "album",
+      populate: { path: "artist" },
+    });
 
     res.status(200).json({
       status: "success",
       message: "Return songs from album",
-      list
-  })
+      list,
+    });
   } catch (error) {
     return res.status(400).json({
       status: "error",
       message: error.message,
     });
   }
-}
+};
+
+const audio = async (req, res) => {
+  try {
+    const file = req.params.file;
+    const filePath = "./src/uploads/songs/" + file;
+    fs.stat(filePath, (error, exists) => {
+      if (error || !exists) return res.status(400).json(
+        {
+          status: "error",
+          message: "No se encontro fichero",
+        }
+      )
+    });
+
+    res.sendFile(path.resolve(filePath));
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
 
 export default {
   pruebaSong,
   createSong,
   oneSong,
-  songsFromAlbum
+  songsFromAlbum,
+  audio,
 };
