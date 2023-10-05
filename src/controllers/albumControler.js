@@ -1,6 +1,8 @@
 import { Album } from "../models/albumModel.js";
 import { Artist } from "../models/artistModel.js";
 import mongoose from "mongoose";
+import fs from 'fs';
+
 
 const pruebaAlbum = (req, res) => {
   return res.status(200).send({
@@ -23,13 +25,33 @@ const createAlbum = async (req, res) => {
     if (!artist)
       throw new Error("No se encontro el artista en la base de datos");
     // multer
-    req.file != null && (album.image = req.file.filename);
+    let texto;
+    if (req.file) {
+      let image = req.file.originalname;
+      //obtener la extension del arhivo de la imagen
+      const imageSplit = image.split("."); //devuele un array y el ultimo elemento es la extension
+      const extension = imageSplit[1];
+      //Chequear la extension
+      if (
+        extension != "png" &&
+        extension != "jpg" &&
+        extension != "jpeg" &&
+        extension != "gif"
+      ) {
+        const filePath = req.file.path;
+        fs.unlinkSync(filePath); // borro el archivo incorrecto
+        throw new Error("Extension no valida");
+      }
+        album.image = req.file.filename;
+
+    } 
     let newAlbum = new Album(album);
     let data = await newAlbum.save();
     return res.status(200).json({
       status: "success",
       message: "Ingresar Album a Base de datos",
       album: data,
+      texto
     });
   } catch (error) {
     return res.status(400).json({

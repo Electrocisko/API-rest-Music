@@ -8,7 +8,7 @@ const SongSchema = new Schema({
     ref: "album",
   },
   track: {
-    type: String,
+    type: Number,
     required: true,
   },
   title: {

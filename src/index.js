@@ -36,6 +36,13 @@ app.use("/api/user", userRouter);
 app.use("/api/artist", artistRouter);
 app.use("/api/album", albumRouter);
 app.use("/api/song", songRouter);
+app.use((error, req, res, next) => {
+  console.log('This is the rejected field ->', error.field);
+  res.status(400).json({
+    status: "error",
+    message: error.message
+  })
+});
 
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);

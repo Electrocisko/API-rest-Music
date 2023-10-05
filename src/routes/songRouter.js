@@ -11,7 +11,7 @@ router.get('/prueba',songControler.pruebaSong );
 router.post('/create', upLoader.single("file"), songControler.createSong);
 router.get('/one/:id',auth ,songControler.oneSong);
 router.get('/songsalbum/:id', auth,songControler.songsFromAlbum);
-router.get('/audio/:file', songControler.audio)
+router.get('/audio/:file',auth,  songControler.audio)
 
 
 export default router;

@@ -22,7 +22,14 @@ const createSong = async (req, res) => {
     // Falta validaciones de mp3
     let fileMp3 = req.file;
     if (!fileMp3) throw new Error("Falta archivo mp3");
-
+    //obtener la extension del arhivo de la imagen
+    const split = fileMp3.originalname.split("."); //devuele un array y el ultimo elemento es la extension
+    //Chequear la extension
+    if (split[1] != "mp3" ) {
+      const filePath = req.file.path;
+      fs.unlinkSync(filePath); // borro el archivo incorrecto
+      throw new Error("Extension no valida");
+    }
     let newSong = new Song(dataSong);
     newSong.file = fileMp3.filename;
     let song = await newSong.save();
