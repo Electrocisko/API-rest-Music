@@ -25,7 +25,7 @@ const createSong = async (req, res) => {
     //obtener la extension del arhivo de la imagen
     const split = fileMp3.originalname.split("."); //devuele un array y el ultimo elemento es la extension
     //Chequear la extension
-    if (split[1] != "mp3" ) {
+    if (split[1] != "mp3") {
       const filePath = req.file.path;
       fs.unlinkSync(filePath); // borro el archivo incorrecto
       throw new Error("Extension no valida");
@@ -102,15 +102,48 @@ const audio = async (req, res) => {
     const file = req.params.file;
     const filePath = "./src/uploads/songs/" + file;
     fs.stat(filePath, (error, exists) => {
-      if (error || !exists) return res.status(400).json(
-        {
+      if (error || !exists)
+        return res.status(400).json({
           status: "error",
           message: "No se encontro fichero",
-        }
-      )
+        });
     });
 
     res.sendFile(path.resolve(filePath));
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+const update = async (req, res) => {
+  try {
+    let id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id))
+      throw new Error("Id de la cancion no valido");
+    let dataSong = req.body;
+    if (!mongoose.Types.ObjectId.isValid(dataSong.album))
+      throw new Error("Id del album no valido");
+    if (req.file) {
+      let fileMp3 = req.file;
+      const split = fileMp3.originalname.split(".");
+      if (split[1] != "mp3") {
+        const filePath = req.file.path;
+        fs.unlinkSync(filePath);
+        throw new Error("Extension file no valida");
+      }
+      dataSong.file = fileMp3.filename;
+    }
+
+    let songUpdated = await Song.findByIdAndUpdate(id,dataSong,{new: true});
+    return res.status(200).json({
+      status: "success",
+      message: "Updated Song",
+      songUpdated
+      
+    });
   } catch (error) {
     return res.status(400).json({
       status: "error",
@@ -125,4 +158,5 @@ export default {
   oneSong,
   songsFromAlbum,
   audio,
+  update,
 };
