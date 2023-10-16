@@ -58,17 +58,19 @@ const oneSong = async (req, res) => {
       path: "album",
       populate: { path: "artist" },
     });
-    if (!song) throw new Error("No se encontro la canción con ese id");
 
+  // ERROR con codigo de status///////////////////////////////////////////////////////
+    if (!song) throw new Error("No se encontro la canción con ese id",{cause: "400"});
     res.status(200).json({
       status: "success",
       message: "Return song",
       song,
     });
   } catch (error) {
-    return res.status(400).json({
+    return res.status(error.cause).json({
       status: "error",
       message: error.message,
+      code: error.cause
     });
   }
 };
