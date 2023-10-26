@@ -12,6 +12,9 @@ export default {
     },
     jwt: {
         SECRET: process.env.SECRET
+    },
+    session: {
+        SECRET_SESSION: process.env.SECRET_SESSION
     }
 
 }

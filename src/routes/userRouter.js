@@ -3,11 +3,13 @@ import userControler from "../controllers/userControler.js";
 import auth from "../middlewares/auth.js";
 import upLoader from "../helpers/storageImageAvatar.js"; //Multer
 
+import passport from "passport";
+
 const router = Router();
 
 //Defino las rutas
-router.get('/prueba',userControler.pruebaUser );
-router.post('/register',userControler.registerUser);
+
+router.post('/register', passport.authenticate('register', {failureRedirect: '/error', failureMessage: true}),userControler.registerUser);
 router.post('/login',userControler.loginUser);
 router.get('/profile/:id',auth, userControler.profileUser);
 router.put('/updated',auth, userControler.updateUser);
