@@ -12,10 +12,17 @@ const initPassport = () => {
       new LocalStrategy(
         { passReqToCallback: true, usernameField: "email" },
         async (req, email, password, done) => {
-          // Validaciones que lleguen los datos
-          //Tiene que llegar dos password para chequear
-          const { name, surname, nick, role, created_at } = req.body;
+          const { name, surname, nick, role, created_at ,password2} = req.body;
+          if (!name) return done(null, false, {message: "Falta completar campo nombre"});
+          if (!surname) return done(null, false, {message: "Falta completar campo apellido"});
+          if (!nick) return done(null, false, {message: "Falta completar campo nick name/apodo"});
+          if (!email) return done(null, false, {message: "Falta completar campo emaill"});
+          if (!password) return done(null, false, {message: "Falta completar campo contraseña/password"});
+          if (!password2) return done(null, false, {message: "Falta completar campo  reingrese constraseña/password"});
+          if (password != password2) return done(null, false, {message: "Contraseñas no concuerdan"});
           // Falta imagen
+          let exist = await User.findOne({$or: [ {email: email},{nick: nick} ] });
+          if (exist) return done(null, false, {message: "Usuario ya registrado con ese mail o apodo duplicado"});
           let userData = {
             name,
             surname,
@@ -25,7 +32,6 @@ const initPassport = () => {
             role,
             created_at,
           };
-          //Validacion de si usuario ya existe
           let newUser = new User(userData);
           newUser.password = await createHash(password);
           const user = await newUser.save();
@@ -36,35 +42,29 @@ const initPassport = () => {
       )
     );
   } catch (error) {
-    console.log("error en local:", error);
-    return done(error, null);
+    return done(error, null, { message: "Error al registrar usuario" } );
   }
 
-
   try {
-    
-  passport.use('login', new LocalStrategy({
-    usernameField:'email'} , async (email, password, done) => {
-      if (!email || !password) return done(null, false);
-      let user = await User.findOne({email})
-      // Falta validacion de comparar el password
-      console.log(user);
-    return done(null,user);
-  }))
-
-  // passport.use('login', new LocalStrategy({
-  //   usernameField:'email', passReqToCallback: true
-  // } , async (email, password, done) => {
-  //   if (!email || !password) return done(null, false);
-  //   let user = await User.findOne({email})
-  //   if (!user) return done(null, false,{ message: "No existe usuario" });
-  //   let checkPassword = await isValidPassword(user.password, password);
-  //   if (!checkPassword) return done(null, false);
-  //   return done(null, user);
-  // }))
+    passport.use(
+      "login",
+      new LocalStrategy(
+        {
+          usernameField: "email",
+        },
+        async (email, password, done) => {
+          if (!email || !password) return done(null, false, {message: "Datos incompletos"});
+          let user = await User.findOne({ email });
+          if (!user) return done(null, false, { message: "No existe usuario" });
+          let checkPassword = await isValidPassword(user.password, password);
+          if (!checkPassword)
+            return done(null, false, { message: "Password Incorrecto" });
+          return done(null, user);
+        }
+      )
+    );
   } catch (error) {
-    console.log('error en login',error);
-    return done(error,null)
+    return done(error, null, { message: "Error en login" } );
   }
 
   passport.serializeUser((user, done) => {
