@@ -9,8 +9,6 @@ const router = Router();
 
 //Defino las rutas
 
-router.post('/register', passport.authenticate('register', {failureRedirect: '/error', failureMessage: true}),userControler.registerUser);
-router.post('/login',userControler.loginUser);
 router.get('/profile/:id',auth, userControler.profileUser);
 router.put('/updated',auth, userControler.updateUser);
 router.post('/upload', [auth, upLoader.single("avatar")], userControler.loader);

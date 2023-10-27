@@ -3,6 +3,7 @@ import cors from "cors";
 import __dirname from "../aux_dirname.js";
 import config from "./config/config.js";
 import connection from "./database/connection.js";
+import sessionRouter from "./routes/sessionsRouter.js";
 import userRouter from "./routes/userRouter.js";
 import songRouter from "./routes/songRouter.js";
 import artistRouter from "./routes/artistRouter.js";
@@ -39,6 +40,7 @@ app.use("/api/user", userRouter);
 app.use("/api/artist", artistRouter);
 app.use("/api/album", albumRouter);
 app.use("/api/song", songRouter);
+app.use("/api/session",sessionRouter);
 app.use("/", viewsRouter);
 
 

@@ -36,14 +36,43 @@ const initPassport = () => {
       )
     );
   } catch (error) {
-    done(error, null);
+    console.log("error en local:", error);
+    return done(error, null);
+  }
+
+
+  try {
+    
+  passport.use('login', new LocalStrategy({
+    usernameField:'email'} , async (email, password, done) => {
+      if (!email || !password) return done(null, false);
+      let user = await User.findOne({email})
+      // Falta validacion de comparar el password
+      console.log(user);
+    return done(null,user);
+  }))
+
+  // passport.use('login', new LocalStrategy({
+  //   usernameField:'email', passReqToCallback: true
+  // } , async (email, password, done) => {
+  //   if (!email || !password) return done(null, false);
+  //   let user = await User.findOne({email})
+  //   if (!user) return done(null, false,{ message: "No existe usuario" });
+  //   let checkPassword = await isValidPassword(user.password, password);
+  //   if (!checkPassword) return done(null, false);
+  //   return done(null, user);
+  // }))
+  } catch (error) {
+    console.log('error en login',error);
+    return done(error,null)
   }
 
   passport.serializeUser((user, done) => {
-    done(null, user);
+    done(null, user._id);
   });
-  passport.deserializeUser(async (user, done) => {
-    return done(null, user);
+  passport.deserializeUser(async (id, done) => {
+    let result = await User.findById(id);
+    return done(null, result);
   });
 };
 
